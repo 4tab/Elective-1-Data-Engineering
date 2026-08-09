@@ -11,4 +11,4 @@ def transform_fill_programming_language(course_data):
 transformed = transform_fill_programming_language(course_data)
 
 # Print out the number of missing values per column of transformed
-print(transformed)
+print(transformed.isnull().sum())
