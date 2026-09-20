@@ -1,0 +1,17 @@
+LICENSE
+README.md
+pyproject.toml
+src/nyc_taxi_data_platform.egg-info/PKG-INFO
+src/nyc_taxi_data_platform.egg-info/SOURCES.txt
+src/nyc_taxi_data_platform.egg-info/dependency_links.txt
+src/nyc_taxi_data_platform.egg-info/top_level.txt
+src/nyc_taxi_platform/__init__.py
+src/nyc_taxi_platform/airflow_dag.py
+src/nyc_taxi_platform/cli.py
+src/nyc_taxi_platform/config.py
+src/nyc_taxi_platform/download.py
+src/nyc_taxi_platform/logging_utils.py
+src/nyc_taxi_platform/pipeline.py
+src/nyc_taxi_platform/quality.py
+tests/test_config.py
+tests/test_quality.py
