@@ -37,3 +37,14 @@ def _make_conn() -> duckdb.DuckDBPyConnection:
 def test_quality_passes_for_valid_curated_data() -> None:
     results = run_quality_checks(_make_conn())
     assert all(result.passed or result.severity != "ERROR" for result in results)
+
+
+def test_raw_anomaly_is_warning_not_gate_failure() -> None:
+    con = _make_conn()
+    con.execute("UPDATE stage_trips SET total_amount = -5 WHERE trip_key = 2")
+    results = run_quality_checks(con)
+    negative = next(r for r in results if r.name == "raw_negative_total_amount")
+    assert negative.passed is False
+    assert negative.severity == "WARNING"
+    assert all(r.passed or r.severity != "ERROR" for r in results)
+
