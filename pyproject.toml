@@ -1,0 +1,11 @@
+[build-system]
+
+[project]
+
+[tool.setuptools]
+
+[tool.setuptools.packages.find]
+
+[tool.ruff]
+
+[tool.pytest.ini_options]
