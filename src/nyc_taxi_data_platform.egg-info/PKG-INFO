@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: nyc-taxi-data-platform
+Version: 0.1.0
+Summary: Production-style NYC taxi ELT portfolio project
+Requires-Python: >=3.11
+License-File: LICENSE
+Dynamic: license-file
