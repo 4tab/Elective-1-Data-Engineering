@@ -32,3 +32,8 @@ def _make_conn() -> duckdb.DuckDBPyConnection:
     """)
     con.execute("CREATE TABLE curated_trips AS SELECT * FROM stage_trips")
     return con
+
+
+def test_quality_passes_for_valid_curated_data() -> None:
+    results = run_quality_checks(_make_conn())
+    assert all(result.passed or result.severity != "ERROR" for result in results)
