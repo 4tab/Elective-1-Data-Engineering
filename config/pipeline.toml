@@ -1,0 +1,6 @@
+year = 2025
+month = 1
+max_raw_file_mb = 2048
+max_total_runtime_data_gb = 10
+source_base_url = "https://d37ci6vzurychx.cloudfront.net"
+warehouse_file = "data/warehouse/nyc_taxi.duckdb"
