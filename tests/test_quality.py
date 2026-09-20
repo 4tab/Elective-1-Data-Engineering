@@ -57,4 +57,11 @@ def test_quality_report_contains_gate_status(tmp_path: Path) -> None:
     assert "Overall status: **PASS**" in text
 
 
-
+def test_sql_files_exist() -> None:
+    expected = [
+        "sql/01_schema.sql",
+        "sql/02_dimensions.sql",
+        "sql/03_fact.sql",
+        "sql/04_marts.sql",
+    ]
+    assert all(Path(p).exists() for p in expected)
