@@ -48,3 +48,13 @@ def test_raw_anomaly_is_warning_not_gate_failure() -> None:
     assert negative.severity == "WARNING"
     assert all(r.passed or r.severity != "ERROR" for r in results)
 
+
+def test_quality_report_contains_gate_status(tmp_path: Path) -> None:
+    results = run_quality_checks(_make_conn())
+    ok = write_quality_report(results, tmp_path / "quality.json", tmp_path / "quality.md")
+    assert ok is True
+    text = (tmp_path / "quality.md").read_text(encoding="utf-8")
+    assert "Overall status: **PASS**" in text
+
+
+
