@@ -22,3 +22,9 @@ def download() -> None:
     """Download the configured monthly source files."""
     pipeline().download()
 
+
+@app.command()
+def run() -> None:
+    """Run download, staging, quality gate, and warehouse build."""
+    pipeline().run()
+
