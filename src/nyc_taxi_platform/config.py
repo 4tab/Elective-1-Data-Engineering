@@ -29,3 +29,6 @@ class Settings:
     def raw_trip_file(self) -> Path:
         return ROOT / "data/raw" / f"yellow_tripdata_{self.period}.parquet"
 
+    @property
+    def raw_zone_file(self) -> Path:
+        return ROOT / "data/raw/taxi_zone_lookup.csv"
