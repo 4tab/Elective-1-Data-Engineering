@@ -54,3 +54,7 @@ def clean() -> None:
             else:
                 item.unlink()
     typer.echo("Generated runtime data removed.")
+
+
+if __name__ == "__main__":
+    app()
