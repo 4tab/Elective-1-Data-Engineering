@@ -6,10 +6,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-
 ROOT = Path(__file__).resolve().parents[2]
 load_dotenv(ROOT / ".env")
-
 
 
 @dataclass(frozen=True)
@@ -33,7 +31,14 @@ class Settings:
     def raw_zone_file(self) -> Path:
         return ROOT / "data/raw/taxi_zone_lookup.csv"
 
-
     @property
     def curated_trip_file(self) -> Path:
         return ROOT / "data/curated" / f"yellow_tripdata_{self.period}_curated.parquet"
+
+
+def load_settings() -> Settings:
+    return Settings(
+        year=int(os.getenv("PIPELINE_YEAR", 2025)),
+        month=int(os.getenv("PIPELINE_MONTH", 1)),
+        max_raw_file_mb=int(os.getenv("MAX_RAW_FILE_MB", 2048)),
+    )
