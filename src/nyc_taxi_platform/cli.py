@@ -28,6 +28,7 @@ def run() -> None:
     """Run download, staging, quality gate, and warehouse build."""
     pipeline().run()
 
+
 @app.command()
 def report() -> None:
     """Generate stakeholder/operations summaries from the warehouse."""
