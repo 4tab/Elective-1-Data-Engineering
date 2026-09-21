@@ -32,3 +32,9 @@ def run() -> None:
 def report() -> None:
     """Generate stakeholder/operations summaries from the warehouse."""
     pipeline().report()
+
+
+@app.command()
+def all() -> None:
+    """Run the entire pipeline and generate operational outputs."""
+    pipeline().all()
