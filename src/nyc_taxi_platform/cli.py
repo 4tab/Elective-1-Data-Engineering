@@ -15,3 +15,10 @@ app = typer.Typer(add_completion=False)
 def pipeline() -> Pipeline:
     configure_logging()
     return Pipeline(load_settings())
+
+
+@app.command()
+def download() -> None:
+    """Download the configured monthly source files."""
+    pipeline().download()
+
