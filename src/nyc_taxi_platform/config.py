@@ -24,3 +24,8 @@ class Settings:
     @property
     def period(self) -> str:
         return f"{self.year:04d}-{self.month:02d}"
+
+    @property
+    def raw_trip_file(self) -> Path:
+        return ROOT / "data/raw" / f"yellow_tripdata_{self.period}.parquet"
+
