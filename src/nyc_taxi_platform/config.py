@@ -32,3 +32,8 @@ class Settings:
     @property
     def raw_zone_file(self) -> Path:
         return ROOT / "data/raw/taxi_zone_lookup.csv"
+
+
+    @property
+    def curated_trip_file(self) -> Path:
+        return ROOT / "data/curated" / f"yellow_tripdata_{self.period}_curated.parquet"
