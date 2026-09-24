@@ -106,3 +106,15 @@ class Pipeline:
             )
             con.execute("COPY (SELECT * FROM curated_trips) TO ? (FORMAT PARQUET)", [str(self.s.curated_trip_file)])
         log.info("Staging complete for %s", self.s.period)
+
+    def quality(self) -> bool:
+        with self._connect() as con:
+            results = run_quality_checks(con)
+        ok = write_quality_report(
+            results,
+            ROOT / "data/quality/quality_results.json",
+            ROOT / "reports/quality_report.md",
+        )
+        if not ok:
+            raise RuntimeError("Data quality gate failed. See reports/quality_report.md")
+        return ok
