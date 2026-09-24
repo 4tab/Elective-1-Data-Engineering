@@ -40,5 +40,15 @@ def run_quality_checks(con: duckdb.DuckDBPyConnection) -> list[CheckResult]:
         "payment_type",
         "total_amount",
     }
+    cols = {row[0] for row in con.execute("DESCRIBE stage_trips").fetchall()}
+    results.append(
+        CheckResult(
+            "required_columns",
+            required.issubset(cols),
+            sorted(cols),
+            f"contains {sorted(required)}",
+            "ERROR",
+        )
+    )
 
     return results
