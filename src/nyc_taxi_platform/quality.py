@@ -23,3 +23,10 @@ def _table_exists(con: duckdb.DuckDBPyConnection, table_name: str) -> bool:
             [table_name],
         ).fetchone()[0]
     )
+
+
+def run_quality_checks(con: duckdb.DuckDBPyConnection) -> list[CheckResult]:
+    """Profile raw source data and gate the curated analytical dataset."""
+    results: list[CheckResult] = []
+
+    return results
