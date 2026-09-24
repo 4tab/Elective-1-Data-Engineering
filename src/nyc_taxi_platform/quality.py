@@ -51,10 +51,8 @@ def run_quality_checks(con: duckdb.DuckDBPyConnection) -> list[CheckResult]:
         )
     )
 
-
     # Public TLC data is vendor-submitted external data, so raw anomalies are
     # measured for observability rather than treated as automatic pipeline failure.
-
     raw_checks = [
         ("raw_null_pickup", "SELECT COUNT(*) FROM stage_trips WHERE tpep_pickup_datetime IS NULL", "0"),
         ("raw_null_dropoff", "SELECT COUNT(*) FROM stage_trips WHERE tpep_dropoff_datetime IS NULL", "0"),
@@ -95,7 +93,7 @@ def run_quality_checks(con: duckdb.DuckDBPyConnection) -> list[CheckResult]:
     for name, sql, expected in raw_checks:
         observed = con.execute(sql).fetchone()[0]
         results.append(CheckResult(name, observed == 0, observed, expected, "WARNING"))
-    
+
     curated_exists = _table_exists(con, "curated_trips")
     results.append(
         CheckResult("curated_table_exists", curated_exists, curated_exists, "curated_trips exists", "ERROR")
@@ -147,3 +145,33 @@ def run_quality_checks(con: duckdb.DuckDBPyConnection) -> list[CheckResult]:
             results.append(CheckResult(name, observed == 0, observed, expected, "ERROR"))
 
     return results
+
+
+def write_quality_report(results: list[CheckResult], json_path: Path, markdown_path: Path) -> bool:
+    payload = [asdict(r) for r in results]
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+    json_path.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+    passed = all(r.passed or r.severity != "ERROR" for r in results)
+
+    lines = [
+        "# Data Quality Report",
+        "",
+        "Raw source anomalies are warnings; curated-layer invariants are the deployment gate.",
+        "",
+        "| Check | Severity | Status | Observed | Expectation |",
+        "|---|---|---|---:|---|",
+    ]
+    for result in results:
+        status = "PASS" if result.passed else ("WARN" if result.severity != "ERROR" else "FAIL")
+        lines.append(
+            f"| {result.name} | {result.severity} | {status} | "
+            f"{result.observed} | {result.expectation} |"
+        )
+    lines += ["", f"Overall status: **{'PASS' if passed else 'FAIL'}**"]
+    failed = [r.name for r in results if not r.passed and r.severity == "ERROR"]
+    if failed:
+        lines += ["", "Failing gates:", *[f"- `{name}`" for name in failed]]
+
+    markdown_path.parent.mkdir(parents=True, exist_ok=True)
+    markdown_path.write_text("\n".join(lines), encoding="utf-8")
+    return passed
