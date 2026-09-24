@@ -126,3 +126,39 @@ class Pipeline:
                 sql = (sql_dir / name).read_text(encoding="utf-8")
                 con.execute(sql)
         log.info("Warehouse and marts built")
+
+    def report(self) -> None:
+        with self._connect() as con:
+            metrics = con.execute(
+                """
+                SELECT
+                    COUNT(*) AS trips,
+                    ROUND(SUM(total_amount), 2) AS gross_amount,
+                    ROUND(AVG(trip_distance), 2) AS avg_distance,
+                    ROUND(AVG(total_amount), 2) AS avg_fare,
+                    ROUND(AVG(date_diff('minute', tpep_pickup_datetime, tpep_dropoff_datetime)), 2) AS avg_duration_minutes
+                FROM fact_trip
+                """
+            ).fetchone()
+        report = ROOT / "reports/operations_summary.md"
+        report.write_text(
+            "# Pipeline Operations Summary\n\n"
+            f"Period: **{self.s.period}**\n\n"
+            "| Metric | Value |\n|---|---:|\n"
+            f"| Trips | {metrics[0]:,} |\n"
+            f"| Gross amount | {metrics[1]:,.2f} |\n"
+            f"| Average distance | {metrics[2]:.2f} |\n"
+            f"| Average total amount | {metrics[3]:.2f} |\n"
+            f"| Average duration (minutes) | {metrics[4]:.2f} |\n",
+            encoding="utf-8",
+        )
+
+    def run(self) -> None:
+        self.download()
+        self.stage()
+        self.quality()
+        self.warehouse()
+
+    def all(self) -> None:
+        self.run()
+        self.report()
