@@ -1,0 +1,27 @@
+CREATE OR REPLACE TABLE fact_trip AS
+SELECT
+    s.trip_key,
+    s.tpep_pickup_datetime,
+    s.tpep_dropoff_datetime,
+    CAST(s.tpep_pickup_datetime AS DATE) AS date_key,
+    CAST(s.tpep_pickup_datetime AS TIME) AS pickup_time,
+    s.VendorID AS vendor_key,
+    s.PULocationID AS pickup_zone_key,
+    s.DOLocationID AS dropoff_zone_key,
+    s.RatecodeID AS rate_code_key,
+    s.payment_type AS payment_type_key,
+    s.passenger_count,
+    s.trip_distance,
+    DATE_DIFF('minute', s.tpep_pickup_datetime, s.tpep_dropoff_datetime) AS trip_duration_minutes,
+    s.fare_amount,
+    s.extra,
+    s.mta_tax,
+    s.tip_amount,
+    s.tolls_amount,
+    s.improvement_surcharge,
+    s.total_amount,
+    s.congestion_surcharge,
+    s.airport_fee,
+    s.cbd_congestion_fee,
+    s.store_and_fwd_flag
+FROM curated_trips s;
