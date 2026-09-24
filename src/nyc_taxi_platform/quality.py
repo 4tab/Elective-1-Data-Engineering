@@ -95,4 +95,55 @@ def run_quality_checks(con: duckdb.DuckDBPyConnection) -> list[CheckResult]:
     for name, sql, expected in raw_checks:
         observed = con.execute(sql).fetchone()[0]
         results.append(CheckResult(name, observed == 0, observed, expected, "WARNING"))
+    
+    curated_exists = _table_exists(con, "curated_trips")
+    results.append(
+        CheckResult("curated_table_exists", curated_exists, curated_exists, "curated_trips exists", "ERROR")
+    )
+
+    if curated_exists:
+        raw_count = con.execute("SELECT COUNT(*) FROM stage_trips").fetchone()[0]
+        curated_count = con.execute("SELECT COUNT(*) FROM curated_trips").fetchone()[0]
+        results.append(CheckResult("raw_row_count", True, raw_count, ">= 0", "INFO"))
+        results.append(CheckResult("curated_row_count", curated_count > 0, curated_count, "> 0", "ERROR"))
+        results.append(
+            CheckResult("excluded_row_count", True, raw_count - curated_count, "reported for lineage", "INFO")
+        )
+
+        gate_checks = [
+            ("curated_null_pickup", "SELECT COUNT(*) FROM curated_trips WHERE tpep_pickup_datetime IS NULL", "0"),
+            ("curated_null_dropoff", "SELECT COUNT(*) FROM curated_trips WHERE tpep_dropoff_datetime IS NULL", "0"),
+            (
+                "curated_bad_chronology",
+                "SELECT COUNT(*) FROM curated_trips WHERE tpep_pickup_datetime >= tpep_dropoff_datetime",
+                "0",
+            ),
+            ("curated_negative_distance", "SELECT COUNT(*) FROM curated_trips WHERE trip_distance < 0", "0"),
+            (
+                "curated_implausible_passengers",
+                "SELECT COUNT(*) FROM curated_trips WHERE passenger_count < 0 OR passenger_count > 10",
+                "0",
+            ),
+            (
+                "curated_duplicate_trip_keys",
+                "SELECT COUNT(*) FROM (SELECT trip_key FROM curated_trips GROUP BY trip_key HAVING COUNT(*) > 1)",
+                "0",
+            ),
+            (
+                "curated_unknown_pickup_zones",
+                "SELECT COUNT(*) FROM curated_trips s LEFT JOIN zones z ON s.PULocationID = z.LocationID "
+                "WHERE z.LocationID IS NULL",
+                "0",
+            ),
+            (
+                "curated_unknown_dropoff_zones",
+                "SELECT COUNT(*) FROM curated_trips s LEFT JOIN zones z ON s.DOLocationID = z.LocationID "
+                "WHERE z.LocationID IS NULL",
+                "0",
+            ),
+        ]
+        for name, sql, expected in gate_checks:
+            observed = con.execute(sql).fetchone()[0]
+            results.append(CheckResult(name, observed == 0, observed, expected, "ERROR"))
+
     return results
