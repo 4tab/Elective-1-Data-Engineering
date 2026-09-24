@@ -51,4 +51,48 @@ def run_quality_checks(con: duckdb.DuckDBPyConnection) -> list[CheckResult]:
         )
     )
 
+
+    # Public TLC data is vendor-submitted external data, so raw anomalies are
+    # measured for observability rather than treated as automatic pipeline failure.
+
+    raw_checks = [
+        ("raw_null_pickup", "SELECT COUNT(*) FROM stage_trips WHERE tpep_pickup_datetime IS NULL", "0"),
+        ("raw_null_dropoff", "SELECT COUNT(*) FROM stage_trips WHERE tpep_dropoff_datetime IS NULL", "0"),
+        (
+            "raw_bad_chronology",
+            "SELECT COUNT(*) FROM stage_trips WHERE tpep_pickup_datetime >= tpep_dropoff_datetime",
+            "0",
+        ),
+        ("raw_negative_distance", "SELECT COUNT(*) FROM stage_trips WHERE trip_distance < 0", "0"),
+        (
+            "raw_implausible_passengers",
+            "SELECT COUNT(*) FROM stage_trips WHERE passenger_count < 0 OR passenger_count > 10",
+            "0",
+        ),
+        (
+            "raw_duplicate_trip_keys",
+            "SELECT COUNT(*) FROM (SELECT trip_key FROM stage_trips GROUP BY trip_key HAVING COUNT(*) > 1)",
+            "0",
+        ),
+        (
+            "raw_unknown_pickup_zones",
+            "SELECT COUNT(*) FROM stage_trips s LEFT JOIN zones z ON s.PULocationID = z.LocationID "
+            "WHERE s.PULocationID IS NOT NULL AND z.LocationID IS NULL",
+            "0",
+        ),
+        (
+            "raw_unknown_dropoff_zones",
+            "SELECT COUNT(*) FROM stage_trips s LEFT JOIN zones z ON s.DOLocationID = z.LocationID "
+            "WHERE s.DOLocationID IS NOT NULL AND z.LocationID IS NULL",
+            "0",
+        ),
+        (
+            "raw_negative_total_amount",
+            "SELECT COUNT(*) FROM stage_trips WHERE total_amount < 0",
+            "0",
+        ),
+    ]
+    for name, sql, expected in raw_checks:
+        observed = con.execute(sql).fetchone()[0]
+        results.append(CheckResult(name, observed == 0, observed, expected, "WARNING"))
     return results
