@@ -118,3 +118,11 @@ class Pipeline:
         if not ok:
             raise RuntimeError("Data quality gate failed. See reports/quality_report.md")
         return ok
+
+    def warehouse(self) -> None:
+        sql_dir = ROOT / "sql"
+        with self._connect() as con:
+            for name in ["01_schema.sql", "02_dimensions.sql", "03_fact.sql", "04_marts.sql"]:
+                sql = (sql_dir / name).read_text(encoding="utf-8")
+                con.execute(sql)
+        log.info("Warehouse and marts built")
