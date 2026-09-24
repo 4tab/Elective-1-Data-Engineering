@@ -14,3 +14,12 @@ class CheckResult:
     observed: object
     expectation: str
     severity: str = "ERROR"
+
+
+def _table_exists(con: duckdb.DuckDBPyConnection, table_name: str) -> bool:
+    return bool(
+        con.execute(
+            "SELECT COUNT(*) FROM information_schema.tables WHERE table_name = ?",
+            [table_name],
+        ).fetchone()[0]
+    )
