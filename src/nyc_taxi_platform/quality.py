@@ -29,4 +29,16 @@ def run_quality_checks(con: duckdb.DuckDBPyConnection) -> list[CheckResult]:
     """Profile raw source data and gate the curated analytical dataset."""
     results: list[CheckResult] = []
 
+    required = {
+        "VendorID",
+        "tpep_pickup_datetime",
+        "tpep_dropoff_datetime",
+        "passenger_count",
+        "trip_distance",
+        "PULocationID",
+        "DOLocationID",
+        "payment_type",
+        "total_amount",
+    }
+
     return results
