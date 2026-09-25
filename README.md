@@ -184,6 +184,7 @@ A strong explanation is:
 
 ```text
 config/              pipeline settings
+WTC-88HCUN4R
 sql/                 warehouse schema + analytics SQL
 src/nyc_taxi_platform/  reusable Python package
 scripts/             bootstrap and utility scripts
