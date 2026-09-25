@@ -19,4 +19,4 @@ fi
 
 echo "Environment ready. Run: source .venv/bin/activate && python -m nyc_taxi_platform.cli all"
 echo
-echo "If venv is not configured. Run: sudo apt install python3.12-venv
+echo "If venv is not configured. Run: sudo apt install python3.12-venv"
