@@ -1,3 +1,4 @@
+WTC-THNHSY24
 # NYC Taxi Data Platform — Production-Style Data Engineering Portfolio Project
 
 A compact end-to-end data engineering project built around the **NYC TLC Yellow Taxi Trip Record** data. The project demonstrates the practical skills expected from an Associate Data Engineer and adds production-minded concerns: idempotent ingestion, layered storage, data quality gates, dimensional modeling, reusable Python modules, automated tests, SQL analytics, and operational reporting.
