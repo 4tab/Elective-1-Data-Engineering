@@ -1,5 +1,3 @@
-WTC-88HCUN4R
-
 # NYC Taxi Data Platform — Production-Style Data Engineering Portfolio Project
 
 A compact end-to-end data engineering project built around the **NYC TLC Yellow Taxi Trip Record** data. The project demonstrates the practical skills expected from an Associate Data Engineer and adds production-minded concerns: idempotent ingestion, layered storage, data quality gates, dimensional modeling, reusable Python modules, automated tests, SQL analytics, and operational reporting.
@@ -207,3 +205,4 @@ NYC TLC notes that the trip data are collected from technology providers and tha
 A fresh clone does not need a prior `clean` command. The pipeline creates its `data/raw`, `data/curated`, `data/warehouse`, `data/quality`, and `reports` directories automatically.
 
 Run commands without copying the shell prompt symbol (for example, do not type `➜` from the terminal output).
+WTC-88HCUN4R
